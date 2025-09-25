@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jadwal Galon Kantor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --secondary: #2ecc71;
+            --accent: #e74c3c;
+            --light: #f9f9f9;
+            --dark: #333;
+            --gray: #95a5a6;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 0 0 20px 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            font-size: 1.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .purchase-list {
+            list-style: none;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .purchase-list li {
+            padding: 15px;
+            margin-bottom: 12px;
+            border-radius: var(--radius);
+            background: #f8fafc;
+            border-left: 5px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .purchase-list li:hover {
+            background: #edf2f7;
+            transform: translateX(5px);
+        }
+
+        .date-badge {
+            background: var(--primary);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            min-width: 100px;
+            text-align: center;
+        }
+
+        .purchase-info {
+            flex: 1;
+        }
+
+        .purchase-name {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: modalFadeIn 0.3s ease;
+            overflow: hidden;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: white;
+            border: none;
+            padding: 0;
+        }
+
+        .close-button {
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .close-button:hover {
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .signature-container {
+            border: 1px solid #ddd;
+            border-radius: var(--radius);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+
+        #signature-pad {
+            width: 100%;
+            height: 150px;
+            background: #f9f9f9;
+            cursor: crosshair;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-secondary {
+            background: var(--gray);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            flex: 1;
+            transition: background 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-submit {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            flex: 2;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: #27ae60;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .purchase-list li {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .date-badge {
+                align-self: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 20px 15px;
+                border-radius: 0 0 15px 15px;
+            }
+            
+            .modal-body {
+                padding: 20px 15px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-water"></i> Jadwal Beli Galon</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-content">
+            <div class="card">
+                <h2>Riwayat Pembelian</h2>
+                <ul class="purchase-list" id="purchase-list">
+                    <% const purchases = Object.entries(purchasesByDate).sort().reverse(); %>
+                    <% if (purchases.length > 0) { %>
+                        <% purchases.forEach(([date, data]) => { %>
+                            <li style="border-left-color: <%= data.color %>;">
+                                <div class="date-badge" style="background-color: <%= data.color %>"><%= date %></div>
+                                <div class="purchase-info">
+                                    <div class="purchase-name"><%= data.name %></div>
+                                </div>
+                            </li>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="empty-state">
+                            <i class="fas fa-clipboard-list"></i>
+                            <p>Belum ada data pembelian bulan ini.</p>
+                        </div>
+                    <% } %>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2>Pembelian Baru</h2>
+                <p style="margin-bottom: 20px;">Klik tombol di bawah untuk mencatat pembelian galon hari ini.</p>
+                <button id="buy-button" class="btn-primary">
+                    <i class="fas fa-plus-circle"></i> Saya Beli Galon Hari Ini
+                </button>
+                
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;">
+                    <h3 style="font-size: 1.2rem; margin-bottom: 15px;">Statistik Bulan Ini</h3>
+                    <div style="display: flex; justify-content: space-around; text-align: center;">
+                        <div>
+                            <div style="font-size: 2rem; color: var(--primary); font-weight: bold;"><%= Object.keys(purchasesByDate).length %></div>
+                            <div style="font-size: 0.9rem; color: var(--gray);">Total Pembelian</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 2rem; color: var(--secondary); font-weight: bold;"><%= users.length %></div>
+                            <div style="font-size: 0.9rem; color: var(--gray);">Orang Terlibat</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="buy-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Konfirmasi Pembelian Galon</h2>
+                <span class="close-button">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form action="/buy" method="POST" id="buy-form">
+                    <div class="form-group">
+                        <label for="name">Nama Kamu:</label>
+                        <select name="name" id="name" required>
+                            <option value="">-- Pilih Nama --</option>
+                            <% users.forEach(user => { %>
+                                <option value="<%= user %>"><%= user %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signature-pad">Tanda Tangan di Sini:</label>
+                        <div class="signature-container">
+                            <canvas id="signature-pad"></canvas>
+                        </div>
+                        <input type="hidden" name="signature" id="signature-data">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" id="clear-button" class="btn-secondary">Hapus Tanda Tangan</button>
+                        <button type="submit" class="btn-submit">Simpan Pembelian</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>Jadwal Galon Kantor &copy; - Dibuat dengan <i class="fas fa-heart" style="color: var(--accent);"></i></p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+    <script>
+        // Inisialisasi elemen DOM
+        const buyButton = document.getElementById('buy-button');
+        const modal = document.getElementById('buy-modal');
+        const closeButton = document.querySelector('.close-button');
+        const clearButton = document.getElementById('clear-button');
+        const buyForm = document.getElementById('buy-form');
+        const signatureData = document.getElementById('signature-data');
+
+        // Inisialisasi signature pad
+        let signaturePad;
+        function initSignaturePad() {
+            const canvas = document.getElementById('signature-pad');
+            signaturePad = new SignaturePad(canvas, {
+                backgroundColor: 'rgb(255, 255, 255)',
+                penColor: 'rgb(0, 0, 0)'
+            });
+            
+            // Menyesuaikan ukuran canvas dengan container
+            function resizeCanvas() {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                canvas.width = canvas.offsetWidth * ratio;
+                canvas.height = canvas.offsetHeight * ratio;
+                canvas.getContext("2d").scale(ratio, ratio);
+                signaturePad.clear(); // Clear signature pad saat resize
+            }
+            
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+        }
+
+        // Event listeners
+        buyButton.addEventListener('click', () => {
+            modal.style.display = 'flex';
+        });
+
+        closeButton.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        clearButton.addEventListener('click', () => {
+            signaturePad.clear();
+        });
+
+        buyForm.addEventListener('submit', (e) => {
+            if (signaturePad.isEmpty()) {
+                e.preventDefault();
+                alert('Harap berikan tanda tangan terlebih dahulu!');
+                return;
+            }
+            
+            // Simpan data tanda tangan ke input hidden
+            signatureData.value = signaturePad.toDataURL();
+        });
+
+        // Tutup modal saat klik di luar konten modal
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Inisialisasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            initSignaturePad();
+        });
+    </script>
+</body>
+</html>

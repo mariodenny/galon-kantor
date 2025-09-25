@@ -1,0 +1,20 @@
+/* public/css/style.css */
+body {
+    font-family: sans-serif;
+    padding: 20px;
+}
+
+.modal {
+    /* Gaya untuk modal pop-up */
+}
+
+canvas {
+    border: 1px solid #ccc;
+    cursor: crosshair;
+}
+
+button {
+    /* Gaya untuk tombol */
+}
+
+/* ...dan seterusnya */
